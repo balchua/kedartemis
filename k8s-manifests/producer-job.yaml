@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: artemis-producer
+  namespace: kedartemis
+spec:
+  template:
+    spec:
+      containers:
+        - name: artemis-producer
+          image: balchu/kedartemis-producer:1.0.0
+          env:
+            - name: ARTEMIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kedartemis
+                  key: artemis-password
+            - name: ARTEMIS_USERNAME
+              value: "artemis"
+            - name: ARTEMIS_SERVER_HOST
+              value: "artemis-activemq.artemis"
+            - name: ARTEMIS_SERVER_PORT
+              value: "61616"
+      restartPolicy: Never
+  backoffLimit: 4

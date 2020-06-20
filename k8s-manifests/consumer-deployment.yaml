@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kedartemis
+  namespace: kedartemis
+  labels:
+    app: kedartemis
+type: Opaque
+data:
+  artemis-password: "YXJ0ZW1pcw=="
+  artemis-username: "YXJ0ZW1pcw=="
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kedartemis-consumer
+  namespace: kedartemis
+spec:
+  selector:
+    matchLabels:
+      app: kedartemis-consumer
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        app: kedartemis-consumer
+    spec:
+      containers:
+        - name: kedartemis-consumer
+          image: localhost:32000/kedartemis-consumer
+          imagePullPolicy: Always
+          env:
+            - name: ARTEMIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kedartemis
+                  key: artemis-password
+            - name: ARTEMIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kedartemis
+                  key: artemis-username
+            - name: ARTEMIS_HOST
+              value: "artemis-activemq.artemis"
+            - name: ARTEMIS_PORT
+              value: "61616"

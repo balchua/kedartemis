@@ -1,0 +1,57 @@
+apiVersion: skaffold/v2beta4
+kind: Config
+profiles:
+  - name: consumer-local
+    build:
+      artifacts:
+        - image: localhost:32000/kedartemis-consumer
+          context: ./consumer/
+          jib: {}
+      local:
+        push: true
+        useDockerCLI: false
+    deploy:
+      kubectl:
+        manifests:
+          - k8s-manifests/consumer-deployment.yaml
+  - name: consumer
+    build:
+      artifacts:
+        - image: balchu/kedartemis-consumer
+          context: ./consumer/
+          jib: {}
+      local:
+        push: true
+        useDockerCLI: false
+    deploy:
+      kubectl:
+        manifests:
+          - k8s-manifests/consumer-deployment.yaml
+
+  - name: producer-local
+    build:
+      artifacts:
+        - image: localhost:32000/kedartemis-producer
+          context: ./consumer/
+          jib: {}
+      local:
+        push: true
+        useDockerCLI: false
+    deploy:
+      kubectl:
+        manifests:
+          - k8s-manifests/producer-job.yaml
+
+  - name: producer
+    build:
+      artifacts:
+          - image: balchu/kedartemis-producer
+            context: ./producer/
+            jib: {}
+      local:
+        push: true
+        useDockerCLI: false
+    deploy:
+      kubectl:
+        manifests:
+          - k8s-manifests/producer-job.yaml
